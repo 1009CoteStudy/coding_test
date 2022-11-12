@@ -17,7 +17,8 @@ current_meeting = info[0] # 0번 인덱스의 끝나는 시간이 제일 짧기 
 cnt = 1 # 첫 회의는 들어갔기에 1
 
 while True:
-    new_info = [x for x in info if x[0] >= current_meeting[1]] # 남은 미팅 중 시작 시간이 현재 미팅의 끝나는 시간 이상인 미팅들만
+    # 남은 미팅 중 시작 시간이 현재 미팅의 끝나는 시간 이상인 미팅들만
+    new_info = [x for x in info if x[0] >= current_meeting[1]] 
     
     if len(new_info) == 0: # 그런 미팅이 없을 경우 종료
         break
