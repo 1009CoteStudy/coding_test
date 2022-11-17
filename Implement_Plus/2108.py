@@ -1,9 +1,12 @@
 # 실버 3
-N = int(input())
+import sys
+from collections import Counter
+
+N = int(sys.stdin.readline())
 datas = []
 
 for i in range(N):
-    data = int(input())
+    data = int(sys.stdin.readline())
     datas.append(data)
 
 # 산술 평균
@@ -17,6 +20,7 @@ print(datas[N // 2])
 ran = max(datas) - min(datas)
 
 # 최빈값
+# 내 코드 (시간 초과로 못풀었다)
 def printFunc(data):
     print(data - 4000)
 
@@ -37,6 +41,18 @@ if tmp.count(max(tmp)) > 1:
     print(tmp.index(max(tmp)) + 1 - 4000)
 else:
     print(tmp.index(max(tmp)) - 4000)
+
+# 정답
+cnt_li = Counter(datas).most_common() # 최빈값 가져오기
+
+# Counter(data).most_common() 이라고 하면 값으로 value: count 가 value 기준 내림차순으로 들어간다. 
+# 예를 들어 datas = [1, 1, 2, 3] 이면
+# Counter({ 3: 1, 2: 1, 1: 2 }) 이렇게 가져온다.
+
+if len(cnt_li) > 1 and cnt_li[0][1] == cnt_li[1][1]: # 데이터가 2개 이상이고 앞의 2개 데이터의 count가 같으면, 즉 최빈값이 2개 이상이면
+    print(cnt_li[1][0]) # 2번째꺼 출력
+else:
+    print(cnt_li[0][0])
 
 # 범위 출력
 print(ran)
