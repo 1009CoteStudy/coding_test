@@ -1,5 +1,6 @@
-N = int(input())
-N = list(str(N))
+import sys
+
+N = list(str(sys.stdin.readline().strip()))
 
 midIdx = len(N) // 2
 

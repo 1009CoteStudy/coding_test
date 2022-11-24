@@ -1,6 +1,8 @@
 # 내 정답
-# 틀렸다고는 하는데 예외를 찾지 못했음
-# 백준의 예시는 다 맞음(3190번) 근데 틀리대 ㅠㅠ..
+import sys
+from collections import deque
+
+
 def changeDir(cur, dir): # 방향 전환
     if dir == 'r':
         if cur == 3:
@@ -21,116 +23,72 @@ def changeDir(cur, dir): # 방향 전환
         else:
             return 2
 
-N = int(input()) # 보드 크기
-K = int(input()) # 사과 개수
+N = int(sys.stdin.readline()) # 보드 크기
+K = int(sys.stdin.readline()) # 사과 개수
 
-appleLoc = [] # 사과 좌표
+map = [[0] * (N + 1) for _ in range(N + 1)] # 맵
 
 for _ in range(K):
-    x, y = map(int, input().split())
-    appleLoc.append((x, y))
+    x, y = sys.stdin.readline().strip().split()
+    map[int(x)][int(y)] = 2 # 사과 위치 = 2
     
-L = int(input()) # 뱀의 방향 변환 횟수
+L = int(sys.stdin.readline()) # 뱀의 방향 변환 횟수
 
 change_dir = [] # 뱀의 방향 변환 저장할 배열
 
 for _ in range(L):
-    x, c = input().split()
+    x, c = sys.stdin.readline().strip().split()
     change_dir.append((x, c))
 
 sec = 0 # 시간
-hx, hy = 1, 1 # 뱀의 머리 위치
-tx, ty = 1, 1 # 뱀의 꼬리 위치
-cur_h_dir = 3 # 뱀의 머리가 현재 바라보는 방향 # default 오른쪽
-cur_t_dir = 3 # 뱀의 꼬리가 현재 바라보는 방향 # default 오른쪽
 
-snake_coord = [(1, 1)] # 뱀이 차지하고 있는 좌표들
+snake_info = deque([])
+snake_info.append((1, 1))
+
+x, y = 1, 1 # 머리 위치
+map[1][1] = 1 # 뱀 위치 = 1
+
+snake_dir = 3 # 뱀의 머리가 현재 바라보는 방향 # default 오른쪽
 
 dir = [(-1, 0), (1, 0), (0, -1), (0, 1)] # 상하좌우
 
 while True:
     sec += 1 # 1초 증가
     
-    # 이동할 내용
-    dx = dir[cur_h_dir][0]
-    dy = dir[cur_h_dir][1]
-    
-    # 머리 이동
-    hx += dx
-    hy += dy
+    # 머리 이동 전 체크
+    dx = x + dir[snake_dir][0]
+    dy = y + dir[snake_dir][1]
     
     # 벽에 닿았거나 본인의 몸과 부딪히면 종료
-    if hx > N or hy > N or hx < 1 or hy < 1 or (hx, hy) in snake_coord:
+    if dx > N or dy > N or dx < 1 or dy < 1 or map[dx][dy] == 1:
         break
     
-    # 뱀의 경로에 현재 머리 위치 추가
-    snake_coord.append((hx, hy))
-    
+    # 꼬리 이동
     # 머리가 사과를 안먹었을 경우
-    if (hx, hy) not in appleLoc:
-        # 꼬리가 있던 위치의 좌표 삭제
-        del snake_coord[0]
+    if map[dx][dy] != 2:
+        tail = snake_info.popleft()
+        t_x = tail[0]
+        t_y = tail[1]
 
-        dx_t = dir[cur_t_dir][0]
-        dy_t = dir[cur_t_dir][1]
-        
-        tmp_tx = tx + dx_t
-        tmp_ty = ty + dy_t
-        
-        # 방향이 바뀔 경우
-        if (tmp_tx, tmp_ty) not in snake_coord:
-            # 오른쪽 체크
-            check_dir = changeDir(cur_t_dir, 'r')
-            
-            dx_t = dir[check_dir][0]
-            dy_t = dir[check_dir][1]
-            
-            tmp_tx = tx + dx_t
-            tmp_ty = ty + dy_t
-            
-            # 오른쪽으로 바꿨더니 길이 있을 경우
-            if (tmp_tx, tmp_ty) in snake_coord:
-                cur_t_dir = check_dir
-                tx = tmp_tx
-                ty = tmp_ty
-            else:
-                # 없을 경우왼쪽 체크
-                # 여기까지 왔으면 왼쪽으로 이동한건 무조건
-                cur_t_dir = changeDir(cur_t_dir, 'r')
-            
-                dx_t = dir[cur_t_dir][0]
-                dy_t = dir[cur_t_dir][1]
-                
-                tx += dx_t
-                ty += dy_t
-                
-        # 방향이 바뀌지 않았을 경우
-        else:
-            tx = tmp_tx
-            ty = tmp_ty
-                
-    # 사과를 먹었을 경우엔 꼬리는 움직이지 않는다.
-    # 인터넷에 찾아보니 한 번 먹은 사과는 다시 먹을 수 없다고 한다. (슈퍼마리오 생각하면 당연한거 같기도)
-    else:
-        for apple in appleLoc:
-            if apple[0] == hx and apple[1] == hy:
-                del apple
-                break
-        
+        map[t_x][t_y] = 0
+
+    # 머리 이동
+    map[dx][dy] = 1
+    x, y = dx, dy
+    # 뱀 위치 정보 갱신
+    snake_info.append((dx, dy))
     
     # 뱀의 이동 경로가 바뀌었을 경우
-    # 머리의 방향만 바꿔주고 이동하지는 않는다.
     if len(change_dir) > 0 and sec == int(change_dir[0][0]):
         # 오른쪽으로 90도
         if change_dir[0][1] == 'D':
-            cur_h_dir = changeDir(cur_h_dir, 'r')
+            snake_dir = changeDir(snake_dir, 'r')
         else: # 왼쪽으로 90도
-            cur_h_dir = changeDir(cur_h_dir, 'l')
+            snake_dir = changeDir(snake_dir, 'l')
 
         change_dir.pop(0)
                     
 print(sec)
-
 
 # 정답 코드
 n = int(input())
