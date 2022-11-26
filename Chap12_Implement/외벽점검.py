@@ -1,36 +1,47 @@
 # 내 코드
+from collections import deque
+
 def solution(n, weak, dist):
     answer = 0
     weak_dist = [] # 각 취약점 사이 거리
     
+    dist.sort(reverse=True)
+        
     for i in range(len(weak) - 1):
         weak_dist.append(weak[i + 1] - weak[i])
     
     # 맨 마지막 취약점과 맨 처음 취약점 사이 거리
-    weak_dist.append((12 - weak[-1]) + weak[0])
+    weak_dist.append((n - weak[-1]) + weak[0])
     
-    weak_dist.sort()
+    # 거리 내림차순
+    weak_dist.sort(reverse=True)
+    weak_dist = deque(weak_dist)
     
     i = 1
+    
     while True:
         wd_len = len(weak_dist)
         
+        # 거리가 하나도 남지 않았으면
         if wd_len <= 0:
             answer = -1
             break
         
-        weak_dist.pop()
+        # 최대값은 빼주기
+        weak_dist.popleft()
         
-		# 취약점 거리의 합 <= dist 뒤에서부터 i번째 사람의 값의 합이면 뭔가 될 것 같았음
-        # 그럴리가 없지
-        if sum(weak_dist) <= sum(dist[len(dist) - i:]):
+        # 최대 친구들 i번째까지 가져오기
+        tmp_dist = [dist[i] for i in range(0, i)]
+        
+        # 남은 거리 <= 친구들이 할 수 있는 값의 합
+        if sum(weak_dist) <= sum(tmp_dist):
             answer = i
             break
         else:
             i += 1
     
     return answer
-
+    
 # 정답 코드
 from itertools import permutations # 순열
 
