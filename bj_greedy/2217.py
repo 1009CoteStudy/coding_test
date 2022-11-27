@@ -1,9 +1,12 @@
-# 로프
+### 로프
 n = int(input())
 rope = []
 for i in range(n):
     rope.append(int(input()))
 
-ans = list(reversed(rope))[-1] * n
-print(ans)
+rope.sort(reverse=False)  # 오름차순
+weight = []
+for i in range(n):
+    weight.append(rope[i]* (n - i))
 
+print(max(weight))
