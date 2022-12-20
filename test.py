@@ -1,65 +1,48 @@
-# 18428
+# 2206
 import sys
-from copy import deepcopy
-from itertools import combinations
+from collections import deque
 
-N = int(sys.stdin.readline())
-stu_len = 0
+N, M = map(int, sys.stdin.readline().strip().split())
 
 graph = []
-teacher_position = []
-x_position = []
+# 방문처리에 벽을 부쉈는지 안부쉈는지 추가
+# 0이면 부수지 않음
+# 1이면 부숨
+visited = [[[0] * 2 for _ in range(M)] for _ in range(N)] 
+visited[0][0][0] = 1 # 거리는 1부터 시작
 
 for i in range(N):
-    graph.append(list(map(str, sys.stdin.readline().strip().split())))
-
-    for j in range(N):
-        if graph[i][j] == 'S':
-            stu_len += 1
-        elif graph[i][j] == 'T':
-            teacher_position.append((i, j))
-        else:
-            x_position.append((i, j))
+    graph.append(list(map(int, sys.stdin.readline().strip())))
 
 dx = [-1, 1, 0, 0]
 dy = [0, 0, -1, 1]
 
-def solution(copy_graph, x, y):
-    for i in range(4):
-        nx, ny = x, y
+def bfs(x, y, z):
+    queue = deque([(x, y, z)])
 
-        while True:
-            nx += dx[i]
-            ny += dy[i]
+    while queue:
+        x, y, z = queue.popleft()
 
-            if nx < 0 or ny < 0 or nx >= N or ny >= N or copy_graph[nx][ny] == 'O':
-                break
-            
-            copy_graph[nx][ny] = 'T'
+        if x == N - 1 and y == M - 1:
+            return visited[x][y][z]
 
-    return copy_graph
+        for i in range(4):
+            nx = x + dx[i]
+            ny = y + dy[i]
 
-answer = 'NO'
+            if nx < 0 or ny < 0 or nx >= N or ny >= M:
+                continue
 
-for x_pos in list(combinations(x_position, 3)):
-    copy_graph = deepcopy(graph)
+            # 벽인데 아직 한번도 안부쉈으면
+            if graph[nx][ny] == 1 and z == 0:
+                visited[nx][ny][1] = visited[x][y][0] + 1
+                queue.append((nx, ny, 1))
 
-    for data in x_pos:
-        copy_graph[data[0]][data[1]] = 'O'
+            # 길이고 방문하지 않았으면
+            elif graph[nx][ny] == 0 and visited[nx][ny][z] == 0:
+                visited[nx][ny][z] = visited[x][y][z] + 1
+                queue.append((nx, ny, z))
 
-    for teacher in teacher_position:
-        x, y = teacher[0], teacher[1]
-        copy_graph = solution(copy_graph, x, y)
+    return -1
 
-    compare_stu_len = 0
-
-    for i in range(N):
-        for j in range(N):
-            if copy_graph[i][j] == 'S':
-                compare_stu_len += 1
-    
-    if compare_stu_len == stu_len:
-        answer = 'YES'
-        break
-
-print(answer)
+print(bfs(0, 0, 0))

@@ -1,4 +1,3 @@
-# 미해결
 import sys
 from collections import deque
 
@@ -9,9 +8,10 @@ graph = [ [] for _ in range(N + 1) ]
 
 for i in range(M):
     x, y = map(int, sys.stdin.readline().strip().split())
-    x, y = min(x, y), max(x, y)
 
+    # 무방향 그래프니까
     graph[x].append(y)
+    graph[y].append(x)
 
 def bfs(start):    
     visited[start] = True
@@ -20,10 +20,10 @@ def bfs(start):
     while queue:
         v = queue.popleft()
 
-        for i in range(len(graph[v])):
-            if not visited[graph[v][i]]:
-                queue.append(graph[v][i])
-                visited[graph[v][i]] = True
+        for i in graph[v]:
+            if not visited[i]:
+                queue.append(i)
+                visited[i] = True
 
 cnt = 0
 
