@@ -1,5 +1,4 @@
 # https://school.programmers.co.kr/learn/courses/30/lessons/60057
-# 10/28 정답
 
 def solution(s):
     res = []
@@ -27,6 +26,11 @@ def solution(s):
             compressed += str(cnt) + prev
         else:
             compressed += prev
-        res.append(compressed)
+        res.append(len(compressed)) # 바로 문자열 길이로 입력
 
-    return len(min(res))
+    # 테스트케이스가 1일 때
+    if not res: return 1
+    else: return min(res)
+
+## 문자열이 값인 리스트의 min을 하면 문자열 비교가 됨
+## 문제는 길이 비교
