@@ -33,7 +33,8 @@ for i in range(T):
 
     for i in range(N):
         for j in range(M):
-            if dfs(i, j):
-                result += 1
+            if graph[i][j] == 1:
+                if dfs(i, j):
+                    result += 1
 
     print(result)
